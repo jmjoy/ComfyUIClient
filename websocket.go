@@ -3,12 +3,10 @@ package comfyUIclient
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/websocket"
 	"log"
 	"sync"
 	"sync/atomic"
-	"time"
-
-	"github.com/gorilla/websocket"
 )
 
 type WebSocketConnection struct {
@@ -36,26 +34,25 @@ func NewWebSocketConnection(url string, maxRetry int, handler Handler) *WebSocke
 }
 
 // ConnectAndListen connects to the websocket and listens for messages
-func (w *WebSocketConnection) ConnectAndListen() {
-	defer w.Close()
-	for {
-		if !w.GetIsConnected() {
-			var err error
-			for i := 0; i < w.MaxRetry; i++ {
-				if err = w.Connect(); err != nil {
-					log.Printf("websocket connection error %v", err)
-					continue
-				}
-				break
+func (w *WebSocketConnection) ConnectAndListen() error {
+	if !w.GetIsConnected() {
+		var err error
+		for i := 0; i < w.MaxRetry; i++ {
+			if err = w.Connect(); err != nil {
+				log.Printf("websocket connection error %v", err)
+				continue
 			}
-
-			if err == nil {
-				w.SetIsConnected(true)
-				go w.listen()
-			}
+			break
 		}
-		time.Sleep(5 * time.Second)
+
+		if err == nil {
+			w.SetIsConnected(true)
+			go w.listen()
+		} else {
+			return err
+		}
 	}
+	return nil
 }
 
 func (w *WebSocketConnection) Connect() error {
@@ -69,7 +66,6 @@ func (w *WebSocketConnection) Connect() error {
 }
 
 func (w *WebSocketConnection) listen() {
-	defer w.Close()
 	for {
 		_, message, err := w.Conn.ReadMessage()
 		if err != nil {
@@ -81,7 +77,6 @@ func (w *WebSocketConnection) listen() {
 			log.Println("handle WebSocket error: ", err)
 		}
 	}
-
 }
 
 func (w *WebSocketConnection) Close() error {
@@ -122,7 +117,11 @@ func getWSMessageData(messageType WsMessageType) interface{} {
 			ExecutionError:       func() interface{} { return &WSMessageExecutionError{} },
 		}
 	})
-	return messageTypeMap[messageType]()
+	handle, ok := messageTypeMap[messageType]
+	if !ok {
+		return nil
+	}
+	return handle()
 }
 
 func (m *WSMessage) UnmarshalJSON(b []byte) error {

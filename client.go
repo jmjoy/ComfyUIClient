@@ -79,8 +79,12 @@ func (c *Client) IsInitialized() bool {
 	return c.webSocket.GetIsConnected()
 }
 
-func (c *Client) ConnectAndListen() {
-	go c.webSocket.ConnectAndListen()
+func (c *Client) ConnectAndListen() error {
+	return c.webSocket.ConnectAndListen()
+}
+
+func (c *Client) Close() error {
+	return c.webSocket.Close()
 }
 
 func (c *Client) SendTaskStatus(w *WSMessage) error {
@@ -115,7 +119,7 @@ func (c *Client) Handle(msg string) error {
 			return fmt.Errorf("SendTaskStatus: error: %w", err)
 		}
 	default:
-		return fmt.Errorf("unknown message type: %s, message: %v", message.Type, message)
+		return nil
 	}
 	return nil
 }
