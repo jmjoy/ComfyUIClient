@@ -63,7 +63,7 @@ func NewClient(endPoint *EndPoint, httpClient *http.Client) *Client {
 		ID:         uuid.New().String(),
 		baseURL:    endPoint.String(),
 		httpClient: httpClient,
-		ch:         make(chan *WSMessage),
+		ch:         make(chan *WSMessage, 100),
 	}
 
 	if strings.HasPrefix(c.baseURL, "https") {
