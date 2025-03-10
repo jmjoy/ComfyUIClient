@@ -218,13 +218,11 @@ type WSMessageExecutionInterrupted struct {
 }
 
 type WSMessageExecutionError struct {
-	PromptID         string                 `json:"prompt_id"`
-	Node             string                 `json:"node_id"`
-	NodeType         string                 `json:"node_type"`
-	Executed         []string               `json:"executed"`
-	ExceptionMessage string                 `json:"exception_message"`
-	ExceptionType    string                 `json:"exception_type"`
-	Traceback        []string               `json:"traceback"`
-	CurrentInputs    map[string]interface{} `json:"current_inputs"`
-	CurrentOutputs   map[int]interface{}    `json:"current_outputs"`
+	PromptID         string   `json:"prompt_id"`
+	Node             string   `json:"node_id"`
+	NodeType         string   `json:"node_type"`
+	Executed         []string `json:"executed"`
+	ExceptionMessage string   `json:"exception_message"`
+	ExceptionType    string   `json:"exception_type"`
+	Traceback        []string `json:"traceback"`
 }
