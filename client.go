@@ -310,6 +310,27 @@ func getHistorySlices(resp *http.Response) ([]*PromptHistoryItem, error) {
 	return histories, nil
 }
 
+// SimpleGetHistoryByPromptID returns history info by promptID
+func (c *Client) SimpleGetHistoryByPromptID(promptID string) (*json.RawMessage, error) {
+	resp, err := c.getJson(string(HistoryRouter)+"/"+promptID, nil, nil)
+	if err != nil {
+		return nil, fmt.Errorf("c.getJsonUsesRouter: error: %w", err)
+	}
+
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("io.ReadAll: error: %w", err)
+	}
+	fmt.Printf(string(body))
+	var historyMap map[string]*json.RawMessage
+	if err := json.Unmarshal(body, &historyMap); err != nil {
+		return nil, fmt.Errorf("json.Unmarshal: error: %w, resp.Body: %v", err, string(body))
+	}
+
+	return historyMap[promptID], nil
+}
+
 // DeleteAllHistories deletes all histories
 func (c *Client) DeleteAllHistories() error {
 	data := map[string]string{"clear": "clear"}
