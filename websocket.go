@@ -201,9 +201,9 @@ type WSMessageDataProgress struct {
 */
 
 type WSMessageDataExecuted struct {
-	Node     string `json:"node"`
-	PromptID string `json:"prompt_id"`
-	Output   map[string][]*DataOutputFile
+	Node     string                       `json:"node"`
+	PromptID string                       `json:"prompt_id"`
+	Output   map[string][]json.RawMessage `json:"output"`
 }
 
 // WSMessageExecutionInterrupted

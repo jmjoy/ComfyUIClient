@@ -322,7 +322,7 @@ func (c *Client) SimpleGetHistoryByPromptID(promptID string) (*json.RawMessage, 
 	if err != nil {
 		return nil, fmt.Errorf("io.ReadAll: error: %w", err)
 	}
-	fmt.Printf(string(body))
+
 	var historyMap map[string]*json.RawMessage
 	if err := json.Unmarshal(body, &historyMap); err != nil {
 		return nil, fmt.Errorf("json.Unmarshal: error: %w, resp.Body: %v", err, string(body))
