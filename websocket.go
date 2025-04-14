@@ -125,6 +125,7 @@ func getWSMessageData(messageType WsMessageType) interface{} {
 }
 
 func (m *WSMessage) UnmarshalJSON(b []byte) error {
+	//fmt.Printf("===> %s\n", string(b))
 	var temp struct {
 		Type WsMessageType   `json:"type"`
 		Data json.RawMessage `json:"data"`
@@ -187,8 +188,10 @@ type WSMessageDataExecuting struct {
 }
 */
 type WSMessageDataProgress struct {
-	Value int `json:"value"`
-	Max   int `json:"max"`
+	Value    int    `json:"value"`
+	Max      int    `json:"max"`
+	Node     string `json:"node"`
+	PromptID string `json:"prompt_id"`
 }
 
 //
